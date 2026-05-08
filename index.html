@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FANCY 凡希｜訂豆專員</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #39FF14;
+      --neon-dim: rgba(57, 255, 20, 0.5);
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray: #86868b;
+      --light-gray: #f5f5f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      padding: 36px 20px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(57, 255, 20, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(57, 255, 20, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero .estd {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--neon);
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    .hero .logo-image {
+      height: 60px;
+      width: auto;
+      margin: 0 auto 10px;
+      display: block;
+      /* 把黑色 logo 變螢光綠 + glow（兼容 file://）*/
+      filter:
+        brightness(0) saturate(100%)
+        invert(82%) sepia(82%)
+        saturate(2476%) hue-rotate(63deg)
+        brightness(115%) contrast(102%)
+        drop-shadow(0 0 12px rgba(57, 255, 20, 0.6))
+        drop-shadow(0 0 32px rgba(57, 255, 20, 0.3));
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero .subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero .marquee {
+      margin-top: 18px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--neon);
+      opacity: 0.6;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ==================== MAIN ==================== */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--gray);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ==================== BIND FORM ==================== */
+    .bind-form {
+      background: var(--white);
+      padding: 32px 24px;
+      border: 2px solid var(--black);
+      border-radius: 18px;
+    }
+
+    .bind-form h2 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .bind-form .hint {
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .bind-form input {
+      width: 100%;
+      padding: 18px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 16px;
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      background: var(--white);
+      color: var(--black);
+      margin-bottom: 16px;
+      outline: none;
+      transition: all 0.15s;
+    }
+
+    .bind-form input:focus {
+      background: var(--black);
+      color: var(--neon);
+      border-color: var(--neon);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    button:hover, button:active {
+      background: var(--neon);
+      color: var(--black);
+      border-color: var(--neon);
+      box-shadow: 0 0 20px var(--neon-dim);
+    }
+
+    button:disabled {
+      background: var(--light-gray);
+      color: var(--gray);
+      border-color: var(--light-gray);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .error {
+      color: #ff3b30;
+      font-size: 11px;
+      text-align: center;
+      margin-top: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== VENDOR HEADER ==================== */
+    .vendor-header {
+      padding: 8px 0 18px;
+      border-bottom: 2px solid var(--black);
+      margin-bottom: 20px;
+    }
+
+    .vendor-header .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 4px;
+    }
+
+    .vendor-header .name {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--black);
+    }
+
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin: 20px 0 12px;
+    }
+
+    .section-label::before {
+      content: '// ';
+      color: var(--neon);
+    }
+
+    /* ==================== DEPOSIT CARD ==================== */
+    .deposit-card {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      padding: 20px 20px 18px 24px;
+      margin-bottom: 12px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+
+    .deposit-card:hover {
+      transform: translateX(2px);
+    }
+
+    .deposit-card::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 5px;
+      background: var(--neon);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--neon-dim);
+    }
+
+    .deposit-card .deposit-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .deposit-card .deposit-bean {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 18px;
+      line-height: 1.35;
+    }
+
+    .deposit-card .balance-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .deposit-card .balance-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .deposit-card .balance-total {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .deposit-card .balance-unit {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-left: 4px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+      margin: 14px 0 10px;
+      border-radius: 4px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--neon);
+      box-shadow: 0 0 8px var(--neon-dim);
+      transition: width 0.5s ease;
+    }
+
+    .deposit-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .empty-state {
+      background: var(--light-gray);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+      border: 2px dashed var(--black);
+      border-radius: 18px;
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      padding: 32px 20px 28px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      border-top: 1px solid var(--light-gray);
+      margin-top: 40px;
+    }
+
+    footer span {
+      color: var(--neon);
+    }
+
+    /* ==================== MOCK TOGGLE ==================== */
+    .mock-toggle {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      background: var(--black);
+      color: var(--neon);
+      padding: 8px 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 2px solid var(--neon);
+      border-radius: 10px;
+      box-shadow: 0 0 16px var(--neon-dim);
+      cursor: pointer;
+      z-index: 9999;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="estd">estd, 2020</span>
+    <img src="logo.png" alt="FANCY" class="logo-image">
+    <div class="subtitle">specialty coffee roasting co.</div>
+    <div class="marquee">{ warning } you gonna join a fantastic journey</div>
+  </header>
+
+  <main>
+    <div id="loading" class="loading">LOADING ...</div>
+
+    <div id="bindFormContainer" style="display:none;">
+      <div class="bind-form">
+        <h2>Bind Account</h2>
+        <p class="hint">請輸入老闆給你的 6 位數綁定碼</p>
+        <input type="text" id="bindCode" inputmode="numeric" maxlength="6" pattern="[0-9]*" placeholder="------">
+        <button id="bindBtn" onclick="handleBind()">Connect</button>
+        <div class="error" id="bindError"></div>
+      </div>
+    </div>
+
+    <div id="balanceContainer" style="display:none;">
+      <div class="vendor-header">
+        <div class="label">Client</div>
+        <div class="name" id="vendorName"></div>
+      </div>
+      <div class="section-label">Coffee Bean Deposits</div>
+      <div id="depositsList"></div>
+    </div>
+  </main>
+
+  <footer>
+    FANCY 凡希咖啡 · estd <span>2020</span> · Taiwan
+  </footer>
+
+  <script>
+    const LIFF_ID = '2010000242-22bEbIyz';
+    const API_BASE = 'https://fancycaffe-bot.zeabur.app/webhook';
+
+    let userId = null;
+
+    async function init() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+        const profile = await liff.getProfile();
+        userId = profile.userId;
+        await loadBalance();
+      } catch (e) {
+        console.error('LIFF init error:', e);
+        document.getElementById('loading').textContent = 'INIT FAILED: ' + e.message;
+      }
+    }
+
+    async function loadBalance() {
+      try {
+        const r = await fetch(`${API_BASE}/balance?userId=${encodeURIComponent(userId)}`);
+        const data = await r.json();
+        document.getElementById('loading').style.display = 'none';
+        if (data.success) {
+          showBalance(data);
+        } else {
+          showBindForm();
+        }
+      } catch (e) {
+        document.getElementById('loading').textContent = 'NETWORK ERROR: ' + e.message;
+      }
+    }
+
+    function showBindForm() {
+      document.getElementById('bindFormContainer').style.display = 'block';
+      document.getElementById('balanceContainer').style.display = 'none';
+      setTimeout(() => document.getElementById('bindCode').focus(), 100);
+    }
+
+    function showBalance(data) {
+      document.getElementById('balanceContainer').style.display = 'block';
+      document.getElementById('bindFormContainer').style.display = 'none';
+      document.getElementById('vendorName').textContent = data.vendor_name;
+
+      const list = document.getElementById('depositsList');
+      if (!data.deposits || data.deposits.length === 0) {
+        list.innerHTML = `<div class="empty-state">目前沒有 active 儲值帳戶<br>請聯繫老闆開戶</div>`;
+        return;
+      }
+
+      list.innerHTML = data.deposits.map(d => {
+        const balance = parseFloat(d.qty_balance_lb || 0);
+        const initial = parseFloat(d.qty_initial_lb || 0);
+        const pct = initial > 0 ? Math.max(0, Math.min(100, (balance / initial) * 100)) : 0;
+        return `
+          <div class="deposit-card">
+            <div class="deposit-id">${d.deposit_id}</div>
+            <div class="deposit-bean">${d.bean_id}</div>
+            <div class="balance-row">
+              <span class="balance-num">${balance}</span>
+              <span class="balance-total">/ ${initial}</span>
+              <span class="balance-unit">lb</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="deposit-meta">opened · ${d.opened_at || '-'}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function handleBind() {
+      const codeEl = document.getElementById('bindCode');
+      const errorEl = document.getElementById('bindError');
+      const btnEl = document.getElementById('bindBtn');
+      const code = codeEl.value.trim();
+      errorEl.textContent = '';
+
+      if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+        errorEl.textContent = 'Please enter 6-digit code';
+        return;
+      }
+
+      // 本機預覽模式：假裝綁定成功
+      if (MOCK_MODE) {
+        btnEl.disabled = true;
+        btnEl.textContent = 'Connecting...';
+        setTimeout(() => {
+          renderMock('bound');
+          btnEl.disabled = false;
+          btnEl.textContent = 'Connect';
+          codeEl.value = '';
+        }, 600);
+        return;
+      }
+
+      btnEl.disabled = true;
+      btnEl.textContent = 'Connecting...';
+
+      try {
+        const r = await fetch(`${API_BASE}/bind`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bind_code: code, line_login_user_id: userId })
+        });
+        const data = await r.json();
+
+        if (data.success) {
+          document.getElementById('bindFormContainer').style.display = 'none';
+          document.getElementById('loading').style.display = 'block';
+          document.getElementById('loading').textContent = `WELCOME ${data.vendor_name}`;
+          setTimeout(() => loadBalance(), 800);
+        } else {
+          errorEl.textContent = data.error || '綁定失敗，請聯繫老闆';
+          btnEl.disabled = false;
+          btnEl.textContent = 'Connect';
+        }
+      } catch (e) {
+        errorEl.textContent = 'NETWORK ERROR: ' + e.message;
+        btnEl.disabled = false;
+        btnEl.textContent = 'Connect';
+      }
+    }
+
+    document.getElementById('bindCode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleBind();
+    });
+
+    // ==================== MOCK PREVIEW ====================
+    const MOCK_MODE = typeof liff === 'undefined';
+
+    if (MOCK_MODE) {
+      runMockPreview();
+    } else {
+      init();
+    }
+
+    function runMockPreview() {
+      userId = 'U_mock_dummy';
+
+      const toggle = document.createElement('div');
+      toggle.className = 'mock-toggle';
+      toggle.textContent = '> Preview · Tap to toggle';
+      let mockState = 'bound';
+      toggle.onclick = () => {
+        mockState = mockState === 'bound' ? 'unbound' : 'bound';
+        renderMock(mockState);
+      };
+      document.body.appendChild(toggle);
+
+      renderMock('bound');
+    }
+
+    function renderMock(state) {
+      document.getElementById('loading').style.display = 'none';
+      if (state === 'unbound') {
+        showBindForm();
+      } else {
+        showBalance({
+          success: true,
+          vendor_id: 'V001',
+          vendor_name: '木商咖啡',
+          deposits: [
+            { deposit_id: 'D0001', bean_id: 'B001 薩爾瓦多 甜心寶貝', qty_initial_lb: 60, qty_balance_lb: 57, opened_at: '2026-05-07' },
+            { deposit_id: 'D0002', bean_id: 'B003 衣索比亞 耶加雪菲 G1', qty_initial_lb: 30, qty_balance_lb: 12, opened_at: '2026-04-15' },
+            { deposit_id: 'D0003', bean_id: 'B005 哥斯大黎加 莫札特卡內特莊園', qty_initial_lb: 20, qty_balance_lb: 5, opened_at: '2026-03-20' }
+          ]
+        });
+      }
+    }
+  </script>
+</body>
+</html>

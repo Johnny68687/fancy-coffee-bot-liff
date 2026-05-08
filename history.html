@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FANCY 凡希｜訂豆專員 — 出貨歷史</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #39FF14;
+      --neon-dim: rgba(57, 255, 20, 0.5);
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray: #86868b;
+      --light-gray: #f5f5f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', -apple-system, system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      padding: 36px 20px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(57, 255, 20, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(57, 255, 20, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero .estd {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--neon);
+      text-transform: uppercase;
+      z-index: 1;
+    }
+    .hero .logo-image {
+      height: 60px;
+      width: auto;
+      margin: 0 auto 10px;
+      display: block;
+      filter:
+        brightness(0) saturate(100%)
+        invert(82%) sepia(82%)
+        saturate(2476%) hue-rotate(63deg)
+        brightness(115%) contrast(102%)
+        drop-shadow(0 0 12px rgba(57, 255, 20, 0.6))
+        drop-shadow(0 0 32px rgba(57, 255, 20, 0.3));
+      position: relative;
+      z-index: 1;
+    }
+    .hero .subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0.7;
+      position: relative;
+      z-index: 1;
+    }
+    .hero .marquee {
+      margin-top: 18px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--neon);
+      opacity: 0.6;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--gray);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .vendor-header {
+      padding: 8px 0 18px;
+      border-bottom: 2px solid var(--black);
+      margin-bottom: 20px;
+    }
+    .vendor-header .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 4px;
+    }
+    .vendor-header .name {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--black);
+    }
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin: 20px 0 12px;
+    }
+    .section-label::before {
+      content: '// ';
+      color: var(--neon);
+    }
+    /* History Card */
+    .history-card {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      padding: 18px 20px 16px 24px;
+      margin-bottom: 12px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+    .history-card:hover {
+      transform: translateX(2px);
+    }
+    .history-card::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 5px;
+      background: var(--neon);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--neon-dim);
+    }
+    .history-card .row1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+    .history-card .ob-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+    .history-card .qty {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--black);
+    }
+    .history-card .qty-unit {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 2px;
+      margin-left: 4px;
+      text-transform: uppercase;
+    }
+    .history-card .row2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .empty-state {
+      background: var(--light-gray);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+      border: 2px dashed var(--black);
+      border-radius: 18px;
+    }
+    footer {
+      padding: 32px 20px 28px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      border-top: 1px solid var(--light-gray);
+      margin-top: 40px;
+    }
+    footer span { color: var(--neon); }
+    .mock-toggle {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      background: var(--black);
+      color: var(--neon);
+      padding: 8px 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 2px solid var(--neon);
+      border-radius: 10px;
+      box-shadow: 0 0 16px var(--neon-dim);
+      cursor: pointer;
+      z-index: 9999;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <span class="estd">estd, 2020</span>
+    <img src="logo.png" alt="FANCY" class="logo-image">
+    <div class="subtitle">specialty coffee roasting co.</div>
+    <div class="marquee">{ warning } you gonna join a fantastic journey</div>
+  </header>
+
+  <main>
+    <div id="loading" class="loading">LOADING ...</div>
+
+    <div id="historyContainer" style="display:none;">
+      <div class="vendor-header">
+        <div class="label">Client</div>
+        <div class="name" id="vendorName"></div>
+      </div>
+      <div class="section-label">Outbound History</div>
+      <div id="historyList"></div>
+    </div>
+
+    <div id="errorContainer" style="display:none;">
+      <div class="empty-state" id="errorMessage">請先綁定帳號</div>
+    </div>
+  </main>
+
+  <footer>
+    FANCY 凡希咖啡 · estd <span>2020</span> · Taiwan
+  </footer>
+
+  <script>
+    const LIFF_ID = '2010000242-AdrpdPaK';
+    const API_BASE = 'https://fancycaffe-bot.zeabur.app/webhook';
+    let userId = null;
+
+    async function init() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+        const profile = await liff.getProfile();
+        userId = profile.userId;
+        await loadHistory();
+      } catch (e) {
+        console.error('LIFF init error:', e);
+        document.getElementById('loading').textContent = 'INIT FAILED: ' + e.message;
+      }
+    }
+
+    async function loadHistory() {
+      try {
+        const r = await fetch(`${API_BASE}/history?userId=${encodeURIComponent(userId)}`);
+        const data = await r.json();
+        document.getElementById('loading').style.display = 'none';
+        if (data.success) {
+          showHistory(data);
+        } else {
+          showError(data.error || '請先綁定帳號');
+        }
+      } catch (e) {
+        document.getElementById('loading').textContent = 'NETWORK ERROR: ' + e.message;
+      }
+    }
+
+    function showHistory(data) {
+      document.getElementById('historyContainer').style.display = 'block';
+      document.getElementById('errorContainer').style.display = 'none';
+      document.getElementById('vendorName').textContent = data.vendor_name;
+
+      const list = document.getElementById('historyList');
+      if (!data.history || data.history.length === 0) {
+        list.innerHTML = `<div class="empty-state">尚無出貨紀錄</div>`;
+        return;
+      }
+
+      list.innerHTML = data.history.map(h => {
+        const date = new Date(h.shipped_at);
+        const dateStr = date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const timeStr = date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return `
+          <div class="history-card">
+            <div class="row1">
+              <span class="ob-id">${h.outbound_id || '-'}</span>
+              <span><span class="qty">-${h.qty_lb}</span><span class="qty-unit">lb</span></span>
+            </div>
+            <div class="row2">
+              <span>${h.deposit_id || '-'}</span>
+              <span>${dateStr} · ${timeStr}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showError(msg) {
+      document.getElementById('historyContainer').style.display = 'none';
+      document.getElementById('errorContainer').style.display = 'block';
+      document.getElementById('errorMessage').textContent = msg;
+    }
+
+    // ==================== MOCK PREVIEW ====================
+    const MOCK_MODE = typeof liff === 'undefined';
+
+    if (MOCK_MODE) {
+      runMockPreview();
+    } else {
+      init();
+    }
+
+    function runMockPreview() {
+      const toggle = document.createElement('div');
+      toggle.className = 'mock-toggle';
+      toggle.textContent = '> Preview · Tap to toggle';
+      let mockState = 'has-history';
+      toggle.onclick = () => {
+        mockState = mockState === 'has-history' ? 'empty' : 'has-history';
+        renderMock(mockState);
+      };
+      document.body.appendChild(toggle);
+      renderMock('has-history');
+    }
+
+    function renderMock(state) {
+      document.getElementById('loading').style.display = 'none';
+      if (state === 'empty') {
+        showError('請先綁定帳號');
+      } else {
+        showHistory({
+          success: true,
+          vendor_id: 'V001',
+          vendor_name: '木商咖啡',
+          history: [
+            { outbound_id: 'OB1Q2W3E', deposit_id: 'D0001', qty_lb: 3, shipped_at: '2026-05-08T10:00:00Z' },
+            { outbound_id: 'OB1Q2W4R', deposit_id: 'D0001', qty_lb: 5, shipped_at: '2026-05-15T14:30:00Z' },
+            { outbound_id: 'OB1Q2W5T', deposit_id: 'D0002', qty_lb: 2, shipped_at: '2026-05-22T09:15:00Z' },
+            { outbound_id: 'OB1Q2W6Y', deposit_id: 'D0001', qty_lb: 4, shipped_at: '2026-05-28T11:00:00Z' }
+          ]
+        });
+      }
+    }
+  </script>
+</body>
+</html>
