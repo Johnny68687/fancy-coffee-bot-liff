@@ -163,12 +163,25 @@
       align-items: baseline;
       margin-bottom: 4px;
     }
-    .history-card .ob-id {
+    .history-card .bean-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.35;
+      flex: 1;
+      padding-right: 12px;
+    }
+    .history-card .bean-id-tag {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 10px;
-      letter-spacing: 2.5px;
+      letter-spacing: 1.5px;
       color: var(--gray);
-      text-transform: uppercase;
+      background: var(--light-gray);
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-right: 6px;
+      vertical-align: middle;
+      font-weight: 500;
     }
     .history-card .qty {
       font-family: 'IBM Plex Mono', monospace;
@@ -316,10 +329,14 @@
         const date = new Date(h.shipped_at);
         const dateStr = date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
         const timeStr = date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
+        // 豆名 + bean_id tag (跟餘額頁一致)
+        const beanLabel = h.bean_name
+          ? `<span class="bean-id-tag">${h.bean_id || ''}</span>${h.bean_name}`
+          : (h.bean_id || '-');
         return `
           <div class="history-card">
             <div class="row1">
-              <span class="ob-id">${h.outbound_id || '-'}</span>
+              <span class="bean-name">${beanLabel}</span>
               <span><span class="qty">-${h.qty_lb}</span><span class="qty-unit">lb</span></span>
             </div>
             <div class="row2">
@@ -369,10 +386,10 @@
           vendor_id: 'V001',
           vendor_name: '木商咖啡',
           history: [
-            { outbound_id: 'OB1Q2W3E', deposit_id: 'D0001', qty_lb: 3, shipped_at: '2026-05-08T10:00:00Z' },
-            { outbound_id: 'OB1Q2W4R', deposit_id: 'D0001', qty_lb: 5, shipped_at: '2026-05-15T14:30:00Z' },
-            { outbound_id: 'OB1Q2W5T', deposit_id: 'D0002', qty_lb: 2, shipped_at: '2026-05-22T09:15:00Z' },
-            { outbound_id: 'OB1Q2W6Y', deposit_id: 'D0001', qty_lb: 4, shipped_at: '2026-05-28T11:00:00Z' }
+            { deposit_id: 'D0001', bean_id: 'B001', bean_name: '薩爾瓦多 甜心寶貝', qty_lb: 3, shipped_at: '2026-05-08T10:00:00Z' },
+            { deposit_id: 'D0001', bean_id: 'B001', bean_name: '薩爾瓦多 甜心寶貝', qty_lb: 5, shipped_at: '2026-05-15T14:30:00Z' },
+            { deposit_id: 'D0002', bean_id: 'B003', bean_name: '衣索比亞 耶加雪菲 G1', qty_lb: 2, shipped_at: '2026-05-22T09:15:00Z' },
+            { deposit_id: 'D0001', bean_id: 'B001', bean_name: '薩爾瓦多 甜心寶貝', qty_lb: 4, shipped_at: '2026-05-28T11:00:00Z' }
           ]
         });
       }
