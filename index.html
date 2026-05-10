@@ -354,6 +354,176 @@
       margin-top: 6px;
     }
 
+    /* ==================== ORDER BUTTON (P2) ==================== */
+    .order-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 14px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .order-btn:hover, .order-btn:active {
+      background: var(--neon);
+      color: var(--black);
+      border-color: var(--neon);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+    .order-btn::before {
+      content: '+ ';
+      color: var(--neon);
+    }
+    .order-btn:hover::before, .order-btn:active::before {
+      color: var(--black);
+    }
+
+    /* ==================== MODAL ==================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      padding: 28px 24px 24px;
+      max-width: 360px;
+      width: 100%;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal h3 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 6px;
+    }
+    .modal .deposit-info {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .modal .balance-info {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .modal label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .modal input[type="number"] {
+      width: 100%;
+      padding: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--black);
+      margin-bottom: 8px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .modal input[type="number"]::-webkit-outer-spin-button,
+    .modal input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .modal input[type="number"]:focus {
+      background: var(--black);
+      color: var(--neon);
+      border-color: var(--neon);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+    .modal .modal-error {
+      color: #ff3b30;
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 1px;
+      min-height: 16px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .modal .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .modal .modal-actions button {
+      flex: 1;
+      padding: 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .modal .modal-cancel {
+      background: var(--white);
+      color: var(--black);
+      border: 2px solid var(--black);
+    }
+    .modal .modal-submit {
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+    }
+    .modal .modal-submit:disabled {
+      background: var(--light-gray);
+      color: var(--gray);
+      border-color: var(--light-gray);
+    }
+    .modal .success-state {
+      text-align: center;
+      padding: 12px 0;
+    }
+    .modal .success-state .check {
+      font-size: 48px;
+      color: var(--neon);
+      filter: drop-shadow(0 0 8px var(--neon-dim));
+      margin-bottom: 12px;
+    }
+    .modal .success-state .order-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      margin-top: 8px;
+    }
+
     .empty-state {
       background: var(--light-gray);
       padding: 40px 20px;
@@ -434,6 +604,22 @@
     </div>
   </main>
 
+  <!-- ==================== ORDER MODAL (P2) ==================== -->
+  <div class="modal-backdrop" id="orderModal">
+    <div class="modal" id="orderModalBody">
+      <h3>// 叫貨</h3>
+      <div class="deposit-info" id="orderDepositInfo"></div>
+      <div class="balance-info" id="orderBalanceInfo"></div>
+      <label>叫貨磅數 (LB)</label>
+      <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" placeholder="0">
+      <div class="modal-error" id="orderError"></div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeOrderModal()">取消</button>
+        <button class="modal-submit" id="orderSubmitBtn" onclick="submitOrder()">送出訂單</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
     FANCY 凡希咖啡 · estd <span>2020</span> · Taiwan
   </footer>
@@ -492,7 +678,7 @@
         return;
       }
 
-      list.innerHTML = data.deposits.map(d => {
+      list.innerHTML = data.deposits.map((d, i) => {
         const balance = parseFloat(d.qty_balance_lb || 0);
         const initial = parseFloat(d.qty_initial_lb || 0);
         const pct = initial > 0 ? Math.max(0, Math.min(100, (balance / initial) * 100)) : 0;
@@ -500,6 +686,8 @@
         const beanLabel = d.bean_name
           ? `<span class="bean-id-tag">${d.bean_id}</span> ${d.bean_name}`
           : d.bean_id;
+        // 餘額不夠 0.5 磅就不顯示叫貨按鈕
+        const canOrder = balance >= 0.5;
         return `
           <div class="deposit-card">
             <div class="deposit-id">${d.deposit_id}</div>
@@ -513,9 +701,13 @@
               <div class="progress-fill" style="width:${pct}%"></div>
             </div>
             <div class="deposit-meta">opened · ${d.opened_at || '-'}</div>
+            ${canOrder ? `<button class="order-btn" onclick="openOrderModal(${i})">叫貨</button>` : ''}
           </div>
         `;
       }).join('');
+
+      // 把 deposits 存到 window 給 modal 用
+      window.__deposits = data.deposits;
     }
 
     async function handleBind() {
@@ -574,6 +766,118 @@
     document.getElementById('bindCode').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') handleBind();
     });
+
+    // ==================== ORDER MODAL (P2) ====================
+    let currentOrderDeposit = null;
+
+    function openOrderModal(depositIndex) {
+      const d = window.__deposits[depositIndex];
+      if (!d) return;
+      currentOrderDeposit = d;
+      const balance = parseFloat(d.qty_balance_lb || 0);
+      const beanLabel = d.bean_name ? `${d.bean_id} · ${d.bean_name}` : d.bean_id;
+      document.getElementById('orderDepositInfo').textContent = `${d.deposit_id} ${beanLabel}`;
+      document.getElementById('orderBalanceInfo').textContent = `Available: ${balance} LB`;
+      document.getElementById('orderQty').value = '';
+      document.getElementById('orderQty').max = balance;
+      document.getElementById('orderError').textContent = '';
+      document.getElementById('orderSubmitBtn').disabled = false;
+      document.getElementById('orderSubmitBtn').textContent = '送出訂單';
+      document.getElementById('orderModal').classList.add('active');
+      setTimeout(() => document.getElementById('orderQty').focus(), 100);
+    }
+
+    function closeOrderModal() {
+      document.getElementById('orderModal').classList.remove('active');
+      currentOrderDeposit = null;
+    }
+
+    async function submitOrder() {
+      const qtyEl = document.getElementById('orderQty');
+      const errEl = document.getElementById('orderError');
+      const btnEl = document.getElementById('orderSubmitBtn');
+      const qty = parseFloat(qtyEl.value);
+      const balance = parseFloat(currentOrderDeposit.qty_balance_lb || 0);
+
+      errEl.textContent = '';
+
+      // 驗證
+      if (!qty || qty <= 0) {
+        errEl.textContent = '⚠️ 請輸入有效磅數';
+        return;
+      }
+      if (qty < 0.5) {
+        errEl.textContent = '⚠️ 最低訂貨 0.5 磅';
+        return;
+      }
+      if (qty > balance) {
+        errEl.textContent = `⚠️ 您的餘額只有 ${balance} 磅`;
+        return;
+      }
+
+      // Mock mode: 假裝成功
+      if (MOCK_MODE) {
+        btnEl.disabled = true;
+        btnEl.textContent = 'Sending...';
+        setTimeout(() => showOrderSuccess('ORDMOCK1234'), 500);
+        return;
+      }
+
+      // 真實送單
+      btnEl.disabled = true;
+      btnEl.textContent = 'Sending...';
+
+      try {
+        const r = await fetch(`${API_BASE}/order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            line_login_user_id: userId,
+            deposit_id: currentOrderDeposit.deposit_id,
+            qty_lb: qty
+          })
+        });
+        const data = await r.json();
+        if (data.success) {
+          showOrderSuccess(data.order_id);
+        } else {
+          errEl.textContent = data.error || '送單失敗，請稍後再試';
+          btnEl.disabled = false;
+          btnEl.textContent = '送出訂單';
+        }
+      } catch (e) {
+        errEl.textContent = 'NETWORK ERROR: ' + e.message;
+        btnEl.disabled = false;
+        btnEl.textContent = '送出訂單';
+      }
+    }
+
+    function showOrderSuccess(orderId) {
+      const body = document.getElementById('orderModalBody');
+      body.innerHTML = `
+        <div class="success-state">
+          <div class="check">✓</div>
+          <div class="deposit-info">訂單已送出</div>
+          <div class="balance-info">老闆收到通知後會處理</div>
+          <div class="order-id">${orderId || '-'}</div>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px;">
+          <button class="modal-submit" onclick="closeOrderModalAndReload()">關閉</button>
+        </div>
+      `;
+    }
+
+    function closeOrderModalAndReload() {
+      closeOrderModal();
+      // 1 秒後重新整理餘額（給 sheet 一點時間）
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('loading').textContent = 'REFRESHING ...';
+        document.getElementById('balanceContainer').style.display = 'none';
+        if (MOCK_MODE) renderMock('bound');
+        else loadBalance();
+      }, 500);
+    }
 
     // ==================== MOCK PREVIEW ====================
     const MOCK_MODE = typeof liff === 'undefined';
