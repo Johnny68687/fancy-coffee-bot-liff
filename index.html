@@ -862,21 +862,15 @@
           <div class="order-id">${orderId || '-'}</div>
         </div>
         <div class="modal-actions" style="margin-top: 20px;">
-          <button class="modal-submit" onclick="closeOrderModalAndReload()">關閉</button>
+          <button class="modal-submit" onclick="closeOrderModal()">繼續叫貨</button>
         </div>
       `;
-    }
-
-    function closeOrderModalAndReload() {
-      closeOrderModal();
-      // 1 秒後重新整理餘額（給 sheet 一點時間）
+      // 2 秒後自動關閉，但不 reload 餘額（餘額還沒扣，等老闆 /接受）
       setTimeout(() => {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('loading').textContent = 'REFRESHING ...';
-        document.getElementById('balanceContainer').style.display = 'none';
-        if (MOCK_MODE) renderMock('bound');
-        else loadBalance();
-      }, 500);
+        if (document.getElementById('orderModal').classList.contains('active')) {
+          closeOrderModal();
+        }
+      }, 2000);
     }
 
     // ==================== MOCK PREVIEW ====================
