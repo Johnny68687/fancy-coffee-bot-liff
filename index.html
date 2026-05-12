@@ -488,12 +488,33 @@
       align-items: center;
       justify-content: space-between;
     }
-    .cart-page .cart-header h2 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-weight: 700;
+    .cart-page .cart-header .back-cart {
+      background: var(--white);
+      color: var(--black);
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      width: 44px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cart-page .cart-header .back-cart:active {
+      background: var(--black);
+      color: var(--neon);
+      box-shadow: 0 0 12px var(--neon-dim);
+    }
+    .cart-page .cart-header .back-cart svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
     }
     .cart-page .cart-header .close-cart {
       background: var(--white);
@@ -959,7 +980,9 @@
   <!-- ==================== CART FULLSCREEN PAGE (P2.5) ==================== -->
   <div class="cart-page" id="cartPage">
     <div class="cart-header">
-      <h2>// 購物車</h2>
+      <button class="back-cart" onclick="closeCartPage()" aria-label="回上一頁">
+        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      </button>
       <button class="close-cart" onclick="closeCartPage()">ADD MORE BEANS</button>
     </div>
     <div class="cart-items" id="cartItems"></div>
