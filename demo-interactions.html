@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FANCY · 互動特效 Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #39FF14;
+      --neon-dim: rgba(57, 255, 20, 0.5);
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray: #888;
+      --light-gray: #f0f0f0;
+    }
+    * { box-sizing: border-box; }
+    html, body { touch-action: pan-y; }
+    body {
+      font-family: 'Noto Sans TC', -apple-system, system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      margin: 0;
+      padding: 0 16px 120px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      padding: 28px 20px 24px;
+      margin: 0 -16px 24px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--neon);
+      font-size: 18px;
+      letter-spacing: 4px;
+      margin: 0 0 4px;
+    }
+    .hero p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .demo-section {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .demo-section::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 5px;
+      background: var(--neon);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--neon-dim);
+    }
+    .demo-tag {
+      display: inline-block;
+      background: var(--black);
+      color: var(--neon);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .demo-section h2 {
+      margin: 0 0 6px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .demo-section .desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .demo-action {
+      background: var(--light-gray);
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 12px;
+    }
+
+    /* shared mini card style */
+    .mini-card {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 14px;
+      padding: 14px 16px;
+      position: relative;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .mini-card::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      bottom: 12px;
+      left: 0;
+      width: 4px;
+      background: var(--neon);
+      border-radius: 0 4px 4px 0;
+    }
+    .mini-card .did {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--gray);
+    }
+    .mini-card .bean {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 4px 0 8px;
+    }
+    .mini-card .bal {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--gray);
+    }
+    .mini-card .bar {
+      height: 6px;
+      background: var(--black);
+      border-radius: 3px;
+      position: relative;
+      overflow: hidden;
+      margin: 8px 0 0;
+    }
+    .mini-card .fill {
+      height: 100%;
+      background: var(--neon);
+      box-shadow: 0 0 6px var(--neon-dim);
+      transition: width 0.4s;
+    }
+    .mini-card .fill.preview {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background: rgba(57, 255, 20, 0.35);
+      box-shadow: none;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 14px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .btn.outline {
+      background: transparent;
+      color: var(--black);
+    }
+
+    /* ================= A. 快捷預設 chips ================= */
+    .qty-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    .qty-input-row input {
+      flex: 1;
+      padding: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .qty-input-row input::-webkit-inner-spin-button,
+    .qty-input-row input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+    .qty-input-row .unit {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gray);
+    }
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .chip {
+      background: var(--white);
+      border: 2px solid var(--black);
+      color: var(--black);
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.15s;
+    }
+    .chip:active {
+      background: var(--neon);
+      transform: scale(0.94);
+      box-shadow: 0 0 12px var(--neon-dim);
+    }
+
+    /* ================= B. 飛入動畫 ================= */
+    .fly-stage {
+      position: relative;
+      min-height: 200px;
+    }
+    .fly-bar-mock {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--black);
+      color: var(--neon);
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--neon);
+      box-shadow: 0 0 12px var(--neon-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+    }
+    .fly-bar-mock .fly-count { font-size: 16px; font-weight: 700; }
+    .flying-pill {
+      position: absolute;
+      background: var(--neon);
+      color: var(--black);
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 0 12px var(--neon-dim);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ================= C. pulse ================= */
+    @keyframes barPulse {
+      0% { transform: scale(1); box-shadow: 0 0 12px var(--neon-dim); }
+      40% { transform: scale(1.04); box-shadow: 0 0 32px var(--neon-dim), 0 0 64px rgba(57,255,20,0.3); }
+      100% { transform: scale(1); box-shadow: 0 0 12px var(--neon-dim); }
+    }
+    .pulse-bar-mock {
+      background: var(--black);
+      color: var(--neon);
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--neon);
+      box-shadow: 0 0 12px var(--neon-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+    }
+    .pulse-bar-mock.pulsing { animation: barPulse 0.5s ease-out; }
+    .pulse-bar-mock .pulse-count { font-size: 16px; font-weight: 700; }
+
+    /* ================= D. checkmark ================= */
+    .check-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .check-btn.success {
+      background: var(--neon);
+      color: var(--black);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+    .check-btn .check-svg {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ================= E. 預設帶上次數量 ================= */
+    .last-hint {
+      background: rgba(57, 255, 20, 0.12);
+      border: 1px dashed var(--neon);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--black);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    /* ================= F. 大型 stepper ================= */
+    .big-stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin: 16px 0;
+    }
+    .big-step-btn {
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--black);
+      background: var(--white);
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.1s;
+    }
+    .big-step-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 22px;
+      height: 4px;
+      background: var(--black);
+      transform: translate(-50%, -50%);
+      border-radius: 2px;
+    }
+    .big-step-btn.plus::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 22px;
+      background: var(--black);
+      transform: translate(-50%, -50%);
+      border-radius: 2px;
+    }
+    .big-step-btn:active {
+      background: var(--black);
+    }
+    .big-step-btn:active::before,
+    .big-step-btn:active::after {
+      background: var(--neon);
+    }
+    .big-step-display {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 48px;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: center;
+    }
+    .big-step-display .u {
+      font-size: 14px;
+      color: var(--gray);
+      letter-spacing: 2px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* ================= G. 進度條 pre-visualize ================= */
+    .preview-control {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .preview-control input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    /* ============== 整合 cart bar at bottom of demo ============== */
+    .demo-cart-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--neon);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
+      box-shadow: 0 4px 20px var(--neon-dim);
+      z-index: 100;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .demo-cart-bar.active { display: flex; }
+    .demo-cart-bar .cnt { font-size: 16px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>FANCY · INTERACTIONS</h1>
+  <p>「加入購物車」7 個特效預覽</p>
+</div>
+
+<!-- ============== A. 快捷預設 chips ============== -->
+<div class="demo-section">
+  <span class="demo-tag">A · QUICK CHIPS</span>
+  <h2>快捷預設按鈕</h2>
+  <p class="desc">modal 內加 5 個咖啡常見磅數 chips（0.5 / 1 / 2 / 5 / 10 lb），點一下就帶值進 input。客戶不用打字。</p>
+  <div class="demo-action">
+    <div class="qty-input-row">
+      <input id="chipQty" type="number" step="0.5" placeholder="0">
+      <span class="unit">LB</span>
+    </div>
+    <div class="quick-chips">
+      <button class="chip" onclick="setChip(0.5)">+0.5</button>
+      <button class="chip" onclick="setChip(1)">+1</button>
+      <button class="chip" onclick="setChip(2)">+2</button>
+      <button class="chip" onclick="setChip(5)">+5</button>
+      <button class="chip" onclick="setChip(10)">+10</button>
+    </div>
+    <p class="desc" style="margin: 0; font-size: 11px;">點 chip 直接累加到 input。連點 5 次「+1」= 5 lb。</p>
+  </div>
+</div>
+
+<!-- ============== B. 飛入動畫 ============== -->
+<div class="demo-section">
+  <span class="demo-tag">B · FLY-IN</span>
+  <h2>飛入動畫</h2>
+  <p class="desc">點「加入購物車」瞬間，「+3 lb」標籤從 deposit card 飛弧線進底部 cart bar，bar 數字同步遞增。</p>
+  <div class="demo-action">
+    <div class="fly-stage" id="flyStage">
+      <div class="mini-card" id="flyCard">
+        <div class="did">D0001</div>
+        <div class="bean">B001 薩爾瓦多 甜心寶貝</div>
+        <div class="bal">餘額 56 LB</div>
+        <button class="btn" style="margin-top:10px; width:100%;" onclick="triggerFly()">+ 加入購物車 (3 lb)</button>
+      </div>
+      <div class="fly-bar-mock" style="position: static; margin-top: 20px;">
+        <div>🛒 <span class="fly-count" id="flyBarCount">0</span> 筆 · <span class="fly-count" id="flyBarTotal">0</span> LB</div>
+        <div>送出 →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== C. cart bar pulse ============== -->
+<div class="demo-section">
+  <span class="demo-tag">C · BAR PULSE</span>
+  <h2>cart bar 脈衝</h2>
+  <p class="desc">商品加入時 cart bar 短暫放大 + glow 0.5 秒，視覺確認「東西進來了」。</p>
+  <div class="demo-action">
+    <div class="pulse-bar-mock" id="pulseBar">
+      <div>🛒 <span class="pulse-count">3</span> 筆 · <span class="pulse-count">12</span> LB</div>
+      <div>送出 →</div>
+    </div>
+    <button class="btn" style="margin-top: 12px; width: 100%;" onclick="triggerPulse()">觸發 pulse</button>
+  </div>
+</div>
+
+<!-- ============== D. 按鈕 checkmark ============== -->
+<div class="demo-section">
+  <span class="demo-tag">D · CHECK</span>
+  <h2>按鈕成功 micro-interaction</h2>
+  <p class="desc">按下「加入購物車」→ 按鈕翻成螢光綠 + ✓ icon 顯示 0.5 秒 → 才關 modal。給「完成」的瞬間爽感。</p>
+  <div class="demo-action">
+    <button class="check-btn" id="checkBtn" onclick="triggerCheck()">加入購物車</button>
+  </div>
+</div>
+
+<!-- ============== E. 預設帶上次數量 ============== -->
+<div class="demo-section">
+  <span class="demo-tag">E · LAST-VALUE</span>
+  <h2>預設帶上次數量</h2>
+  <p class="desc">客戶上次叫 D0001 是 N lb → 下次再開 modal 自動帶 N（localStorage 記每個 deposit 上次量），加綠色 hint。</p>
+  <div class="demo-action">
+    <div id="lastHint" class="last-hint" style="display:none;">上次叫了 <strong id="lastVal">3</strong> LB · 已自動帶入</div>
+    <div class="qty-input-row">
+      <input id="lastInput" type="number" step="0.5" placeholder="0">
+      <span class="unit">LB</span>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn outline" style="flex:1;" onclick="openLastDemo()">開 modal 看效果</button>
+      <button class="btn outline" style="flex:1;" onclick="saveLastDemo()">送出（記住數量）</button>
+    </div>
+    <p class="desc" style="margin: 10px 0 0; font-size: 11px;">第 1 次：開 modal input 是空的 → 填值送出 → 再點「開 modal」會自動帶上次值。</p>
+  </div>
+</div>
+
+<!-- ============== F. 大型 stepper ============== -->
+<div class="demo-section">
+  <span class="demo-tag">F · BIG STEPPER</span>
+  <h2>大型 stepper（長按連加）</h2>
+  <p class="desc">數字超大居中，左右 56px 大圓鈕。長按 0.4 秒後每 100ms 連續 +0.5（解決「叫 30 lb 要點 60 次」）。</p>
+  <div class="demo-action">
+    <div class="big-stepper">
+      <button class="big-step-btn" onmousedown="startStep(-0.5)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep(-0.5); event.preventDefault();" ontouchend="stopStep()"></button>
+      <div class="big-step-display"><span id="bigVal">0</span><span class="u">LB</span></div>
+      <button class="big-step-btn plus" onmousedown="startStep(0.5)" onmouseup="stopStep()" onmouseleave="stopStep()" ontouchstart="startStep(0.5); event.preventDefault();" ontouchend="stopStep()"></button>
+    </div>
+    <p class="desc" style="margin: 0; font-size: 11px; text-align:center;">長按 + 或 − 連續加減</p>
+  </div>
+</div>
+
+<!-- ============== G. 進度條 pre-visualize ============== -->
+<div class="demo-section">
+  <span class="demo-tag">G · PRE-VIZ</span>
+  <h2>進度條預覽扣完後餘額</h2>
+  <p class="desc">調整磅數時 deposit card 的進度條同步顯示「叫完後會剩多少」（半透明覆蓋 layer）。客戶直觀看到對餘額的影響。</p>
+  <div class="demo-action">
+    <div class="mini-card">
+      <div class="did">D0001</div>
+      <div class="bean">B001 薩爾瓦多 甜心寶貝</div>
+      <div class="bal">餘 <span id="vizBalNow">56</span> / 100 LB</div>
+      <div class="bar">
+        <div class="fill preview" id="vizPreview" style="width: 56%; left: 0;"></div>
+        <div class="fill" id="vizFill" style="width: 56%;"></div>
+      </div>
+    </div>
+    <div class="preview-control">
+      <input id="vizQty" type="number" min="0" max="56" step="0.5" value="0" oninput="updateViz(this.value)">
+      <span class="btn outline" style="cursor:default;">LB 要叫</span>
+    </div>
+  </div>
+</div>
+
+<!-- floating demo cart bar (B 飛入動畫用) -->
+<div class="demo-cart-bar" id="demoCartBar">
+  <div>🛒 <span class="cnt" id="demoCartCount">0</span> 筆 · <span class="cnt" id="demoCartTotal">0</span> LB</div>
+  <div>送出 →</div>
+</div>
+
+<script>
+  // ============== A 快捷 chips ==============
+  function setChip(val) {
+    const input = document.getElementById('chipQty');
+    const cur = parseFloat(input.value) || 0;
+    input.value = (cur + val);
+  }
+
+  // ============== B 飛入動畫 ==============
+  let flyCount = 0, flyTotal = 0;
+  function triggerFly() {
+    const card = document.getElementById('flyCard');
+    const stage = document.getElementById('flyStage');
+    const bar = stage.querySelector('.fly-bar-mock');
+    const cardRect = card.getBoundingClientRect();
+    const barRect = bar.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+
+    const pill = document.createElement('div');
+    pill.className = 'flying-pill';
+    pill.textContent = '+3 LB';
+    // 起點：card 中心
+    pill.style.left = (cardRect.left - stageRect.left + cardRect.width / 2 - 30) + 'px';
+    pill.style.top = (cardRect.top - stageRect.top + cardRect.height / 2 - 12) + 'px';
+    stage.appendChild(pill);
+    // 動畫到 bar 左上
+    const tx = (barRect.left - stageRect.left + 30) - parseFloat(pill.style.left);
+    const ty = (barRect.top - stageRect.top + 8) - parseFloat(pill.style.top);
+    pill.animate([
+      { transform: 'translate(0,0) scale(1)', opacity: 1 },
+      { transform: `translate(${tx/2}px, ${ty - 60}px) scale(1.2)`, opacity: 1, offset: 0.5 },
+      { transform: `translate(${tx}px, ${ty}px) scale(0.6)`, opacity: 0 }
+    ], { duration: 600, easing: 'cubic-bezier(.5,-0.3,.5,1)' }).onfinish = () => {
+      pill.remove();
+      flyCount++;
+      flyTotal += 3;
+      document.getElementById('flyBarCount').textContent = flyCount;
+      document.getElementById('flyBarTotal').textContent = flyTotal;
+      // 順便給 bar 加 pulse
+      bar.animate([
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.05)' },
+        { transform: 'scale(1)' }
+      ], { duration: 300 });
+    };
+  }
+
+  // ============== C cart bar pulse ==============
+  function triggerPulse() {
+    const bar = document.getElementById('pulseBar');
+    bar.classList.remove('pulsing');
+    void bar.offsetWidth;  // force reflow
+    bar.classList.add('pulsing');
+  }
+
+  // ============== D checkmark ==============
+  function triggerCheck() {
+    const btn = document.getElementById('checkBtn');
+    if (btn.classList.contains('success')) return;
+    btn.classList.add('success');
+    btn.innerHTML = '<svg class="check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已加入購物車';
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.innerHTML = '加入購物車';
+    }, 1200);
+  }
+
+  // ============== E 記住上次數量 ==============
+  const LAST_KEY = 'demo_last_d0001';
+  function openLastDemo() {
+    const last = localStorage.getItem(LAST_KEY);
+    const input = document.getElementById('lastInput');
+    const hint = document.getElementById('lastHint');
+    if (last) {
+      input.value = last;
+      document.getElementById('lastVal').textContent = last;
+      hint.style.display = 'block';
+    } else {
+      input.value = '';
+      hint.style.display = 'none';
+    }
+    input.focus();
+  }
+  function saveLastDemo() {
+    const v = document.getElementById('lastInput').value;
+    if (v && parseFloat(v) > 0) {
+      localStorage.setItem(LAST_KEY, v);
+      alert('已送出！記住了 ' + v + ' LB。再點「開 modal」會自動帶入。');
+    }
+  }
+
+  // ============== F 長按 stepper ==============
+  let stepInterval = null, stepTimeout = null;
+  function startStep(delta) {
+    doStep(delta);
+    stepTimeout = setTimeout(() => {
+      stepInterval = setInterval(() => doStep(delta), 100);
+    }, 400);
+  }
+  function stopStep() {
+    clearTimeout(stepTimeout);
+    clearInterval(stepInterval);
+    stepInterval = null;
+  }
+  function doStep(delta) {
+    const el = document.getElementById('bigVal');
+    let v = parseFloat(el.textContent) || 0;
+    v = Math.max(0, Math.round((v + delta) * 2) / 2);
+    el.textContent = v % 1 === 0 ? v : v.toFixed(1);
+  }
+
+  // ============== G 進度條預覽 ==============
+  function updateViz(qty) {
+    qty = parseFloat(qty) || 0;
+    const max = 100, current = 56;
+    const newBal = Math.max(0, current - qty);
+    document.getElementById('vizBalNow').textContent = newBal % 1 === 0 ? newBal : newBal.toFixed(1);
+    document.getElementById('vizPreview').style.width = (current / max * 100) + '%';
+    document.getElementById('vizFill').style.width = (newBal / max * 100) + '%';
+  }
+</script>
+</body>
+</html>
