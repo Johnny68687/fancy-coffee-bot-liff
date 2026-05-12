@@ -929,15 +929,36 @@
       fill: none;
     }
 
-    /* G. Progress bar deducted (orange overlay) */
+    /* G. Progress bar deducted — 螢光綠斜紋（typical pending-pattern 語意）*/
     .deposit-card .progress-fill-deducted {
       position: absolute;
       top: 0;
       height: 100%;
-      background: #FF8A00;
-      box-shadow: 0 0 8px rgba(255, 138, 0, 0.55);
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--neon),
+        var(--neon) 3px,
+        rgba(0, 0, 0, 0.85) 3px,
+        rgba(0, 0, 0, 0.85) 7px
+      );
+      box-shadow: 0 0 6px var(--neon-dim);
       transition: width 0.4s ease, left 0.4s ease;
       border-radius: 0 4px 4px 0;
+    }
+
+    /* X. modal balance preview — 「579 → 449 LB（叫完後）」*/
+    .modal .balance-info .bal-from {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+    .modal .balance-info .bal-after {
+      color: var(--neon);
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--neon-dim);
+    }
+    .modal .balance-info .bal-arrow {
+      margin: 0 6px;
+      color: var(--neon);
     }
 
     .modal .success-state {
@@ -1271,7 +1292,7 @@
         <div class="deposit-info" id="orderDepositInfo">${d.deposit_id} ${beanLabel}</div>
         <div class="balance-info" id="orderBalanceInfo">Available: ${balance} LB</div>
         <label>叫貨磅數 (LB)</label>
-        <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" max="${balance}" value="${currentQty}" placeholder="0">
+        <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" max="${balance}" value="${currentQty}" placeholder="0" oninput="updateBalancePreview()">
         <div class="quick-chips">
           <button class="chip" type="button" onclick="addChipValue(2)">+2</button>
           <button class="chip" type="button" onclick="addChipValue(10)">+10</button>
@@ -1284,7 +1305,24 @@
         </div>
       `;
       document.getElementById('orderModal').classList.add('active');
-      setTimeout(() => document.getElementById('orderQty').focus(), 100);
+      updateBalancePreview();  // modal 開啟時跑一次（處理「修改」預填值的預扣顯示）
+      // 不 auto-focus input，避免鍵盤跳出干擾 chip 操作。客戶要打字自己點 input
+    }
+
+    // X: input 變化時即時更新 modal 預扣顯示「579 → 449 LB」
+    function updateBalancePreview() {
+      const input = document.getElementById('orderQty');
+      const info = document.getElementById('orderBalanceInfo');
+      if (!input || !info || !currentOrderDeposit) return;
+      const balance = parseFloat(currentOrderDeposit.qty_balance_lb || 0);
+      const qty = parseFloat(input.value) || 0;
+      if (qty > 0 && qty <= balance) {
+        const after = balance - qty;
+        const afterDisplay = after % 1 === 0 ? after : after.toFixed(1);
+        info.innerHTML = `Available: <span class="bal-from">${balance}</span><span class="bal-arrow">→</span><span class="bal-after">${afterDisplay}</span> LB`;
+      } else {
+        info.textContent = `Available: ${balance} LB`;
+      }
     }
 
     function closeOrderModal() {
@@ -1292,14 +1330,14 @@
       currentOrderDeposit = null;
     }
 
-    // A: chip 點擊累加
+    // A: chip 點擊累加（不 focus input，避免鍵盤跳出）
     function addChipValue(val) {
       const input = document.getElementById('orderQty');
       if (!input) return;
       const cur = parseFloat(input.value) || 0;
       const max = parseFloat(input.max) || Infinity;
       input.value = Math.min(cur + val, max);
-      input.focus();
+      input.dispatchEvent(new Event('input', { bubbles: true }));  // 觸發即時預扣顯示
     }
 
     // 純前端：加入購物車 / 更新數量（不打 API）
