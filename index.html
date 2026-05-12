@@ -378,12 +378,333 @@
       border-color: var(--neon);
       box-shadow: 0 0 16px var(--neon-dim);
     }
-    .order-btn::before {
+    .order-btn.add-to-cart::before {
       content: '+ ';
       color: var(--neon);
     }
-    .order-btn:hover::before, .order-btn:active::before {
+    .order-btn.add-to-cart:hover::before, .order-btn.add-to-cart:active::before {
       color: var(--black);
+    }
+    .order-btn.edit-cart {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--black);
+    }
+    .order-btn.edit-cart:hover, .order-btn.edit-cart:active {
+      background: var(--black);
+      color: var(--neon);
+      border-color: var(--black);
+      box-shadow: none;
+    }
+
+    /* ==================== CART BADGE (P2.5) ==================== */
+    .cart-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--neon);
+      color: var(--black);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px var(--neon-dim);
+      text-transform: uppercase;
+    }
+
+    /* ==================== CART FLOATING BAR (P2.5) ==================== */
+    .cart-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--neon);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      box-shadow: 0 4px 20px var(--neon-dim);
+      cursor: pointer;
+      z-index: 100;
+      transition: transform 0.2s;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .cart-bar.active { display: flex; }
+    .cart-bar:hover { transform: translateY(-2px); }
+    .cart-bar .cart-summary {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+    .cart-bar .cart-icon {
+      font-size: 20px;
+    }
+    .cart-bar .cart-count-text {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .cart-bar .cart-count-text .num {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--neon);
+      margin-right: 2px;
+    }
+    .cart-bar .submit-arrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--neon);
+    }
+
+    /* ==================== CART FULLSCREEN PAGE (P2.5) ==================== */
+    .cart-page {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .cart-page.active { display: flex; }
+    .cart-page .cart-header {
+      padding: 24px 20px 16px;
+      border-bottom: 2px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-page .cart-header h2 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .cart-page .cart-header .close-cart {
+      background: var(--white);
+      color: var(--black);
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .cart-page .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 120px;
+    }
+    .cart-item {
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .cart-item::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
+      width: 4px;
+      background: var(--neon);
+      border-radius: 0 4px 4px 0;
+    }
+    .cart-item .item-deposit-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .cart-item .item-bean {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .cart-item .item-qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .cart-item .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-item .qty-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--black);
+      background: var(--white);
+      border-radius: 10px;
+      padding: 0;
+      cursor: pointer;
+      font-size: 0;  /* hide any text content */
+    }
+    /* CSS-drawn 「−」 / 「+」 — 像素級置中，不依賴字體 */
+    .cart-item .qty-btn.minus::before,
+    .cart-item .qty-btn.plus::before,
+    .cart-item .qty-btn.plus::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background: var(--black);
+      border-radius: 2px;
+      transform: translate(-50%, -50%);
+    }
+    .cart-item .qty-btn.minus::before,
+    .cart-item .qty-btn.plus::before {
+      width: 14px;
+      height: 3px;
+    }
+    .cart-item .qty-btn.plus::after {
+      width: 3px;
+      height: 14px;
+    }
+    .cart-item .qty-btn:active {
+      background: var(--black);
+    }
+    .cart-item .qty-btn:active::before,
+    .cart-item .qty-btn:active::after {
+      background: var(--neon);
+    }
+    .cart-item .qty-input {
+      width: 64px;
+      padding: 6px 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--black);
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .cart-item .qty-input::-webkit-outer-spin-button,
+    .cart-item .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .cart-item .qty-unit {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+    .cart-item .item-balance-hint {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .cart-item .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--gray);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .cart-item .remove-btn:active {
+      color: #ff3b30;
+    }
+    .cart-page .cart-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--white);
+      border-top: 2px solid var(--black);
+      padding: 16px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cart-page .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .cart-page .cart-total .label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      color: var(--gray);
+      text-transform: uppercase;
+    }
+    .cart-page .cart-total .total-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--black);
+    }
+    .cart-page .cart-total .total-val .unit {
+      font-size: 11px;
+      color: var(--gray);
+      margin-left: 4px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .cart-page .cart-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--black);
+      color: var(--neon);
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .cart-page .cart-submit:active {
+      background: var(--neon);
+      color: var(--black);
+      box-shadow: 0 0 16px var(--neon-dim);
+    }
+    .cart-page .cart-submit:disabled {
+      background: var(--light-gray);
+      color: var(--gray);
+      border-color: var(--light-gray);
+      cursor: not-allowed;
+    }
+    .cart-page .cart-empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--gray);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
     /* ==================== MODAL ==================== */
@@ -607,7 +928,7 @@
   <!-- ==================== ORDER MODAL (P2) ==================== -->
   <div class="modal-backdrop" id="orderModal">
     <div class="modal" id="orderModalBody">
-      <h3>// 叫貨</h3>
+      <h3>// 加入購物車</h3>
       <div class="deposit-info" id="orderDepositInfo"></div>
       <div class="balance-info" id="orderBalanceInfo"></div>
       <label>叫貨磅數 (LB)</label>
@@ -615,8 +936,35 @@
       <div class="modal-error" id="orderError"></div>
       <div class="modal-actions">
         <button class="modal-cancel" onclick="closeOrderModal()">取消</button>
-        <button class="modal-submit" id="orderSubmitBtn" onclick="submitOrder()">送出訂單</button>
+        <button class="modal-submit" id="orderSubmitBtn" onclick="confirmAddToCart()">加入購物車</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ==================== CART FLOATING BAR (P2.5) ==================== -->
+  <div class="cart-bar" id="cartBar" onclick="openCartPage()">
+    <div class="cart-summary">
+      <span class="cart-icon">🛒</span>
+      <div class="cart-count-text">
+        <span class="num" id="cartCount">0</span> 筆 · <span class="num" id="cartTotal">0</span> LB
+      </div>
+    </div>
+    <div class="submit-arrow">送出 →</div>
+  </div>
+
+  <!-- ==================== CART FULLSCREEN PAGE (P2.5) ==================== -->
+  <div class="cart-page" id="cartPage">
+    <div class="cart-header">
+      <h2>// 購物車</h2>
+      <button class="close-cart" onclick="closeCartPage()">繼續加豆</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span class="label">合計</span>
+        <span class="total-val"><span id="cartFooterCount">0</span> 筆 / <span id="cartFooterTotal">0</span><span class="unit">lb</span></span>
+      </div>
+      <button class="cart-submit" id="cartSubmitBtn" onclick="submitCart()">送出叫貨</button>
     </div>
   </div>
 
@@ -678,7 +1026,15 @@
         return;
       }
 
-      list.innerHTML = data.deposits.map((d, i) => {
+      // 把 deposits 存到 window 給 modal 用
+      window.__deposits = data.deposits;
+      renderDeposits();
+    }
+
+    function renderDeposits() {
+      const list = document.getElementById('depositsList');
+      const deposits = window.__deposits || [];
+      list.innerHTML = deposits.map((d, i) => {
         const balance = parseFloat(d.qty_balance_lb || 0);
         const initial = parseFloat(d.qty_initial_lb || 0);
         const pct = initial > 0 ? Math.max(0, Math.min(100, (balance / initial) * 100)) : 0;
@@ -688,8 +1044,12 @@
           : d.bean_id;
         // 餘額不夠 0.5 磅就不顯示叫貨按鈕
         const canOrder = balance >= 0.5;
+        // 是否已在購物車
+        const inCart = cart.get(d.deposit_id);
+        const cartQty = inCart ? inCart.qty_lb : 0;
         return `
           <div class="deposit-card">
+            ${inCart ? `<div class="cart-badge">✓ 已加 ${cartQty} lb</div>` : ''}
             <div class="deposit-id">${d.deposit_id}</div>
             <div class="deposit-bean">${beanLabel}</div>
             <div class="balance-row">
@@ -701,13 +1061,14 @@
               <div class="progress-fill" style="width:${pct}%"></div>
             </div>
             <div class="deposit-meta">opened · ${d.opened_at || '-'}</div>
-            ${canOrder ? `<button class="order-btn" onclick="openOrderModal(${i})">叫貨</button>` : ''}
+            ${canOrder ? (
+              inCart
+                ? `<button class="order-btn edit-cart" onclick="openOrderModal(${i})">修改</button>`
+                : `<button class="order-btn add-to-cart" onclick="openOrderModal(${i})">加入購物車</button>`
+            ) : ''}
           </div>
         `;
       }).join('');
-
-      // 把 deposits 存到 window 給 modal 用
-      window.__deposits = data.deposits;
     }
 
     async function handleBind() {
@@ -767,7 +1128,9 @@
       if (e.key === 'Enter') handleBind();
     });
 
-    // ==================== ORDER MODAL (P2) ====================
+    // ==================== CART STATE (P2.5) ====================
+    // key: deposit_id, value: { deposit_id, qty_lb, bean_label, balance, bean_id, bean_name }
+    const cart = new Map();
     let currentOrderDeposit = null;
 
     function openOrderModal(depositIndex) {
@@ -776,17 +1139,24 @@
       currentOrderDeposit = d;
       const balance = parseFloat(d.qty_balance_lb || 0);
       const beanLabel = d.bean_name ? `${d.bean_id} · ${d.bean_name}` : d.bean_id;
-      // ⭐ 每次都重 build form（避免被 success state 取代後找不到元素）
+      const inCart = cart.get(d.deposit_id);
+      const currentQty = inCart ? inCart.qty_lb : '';
+      const title = inCart ? '// 修改數量' : '// 加入購物車';
+      const submitLabel = inCart ? '更新' : '加入購物車';
+      const removeBtn = inCart
+        ? `<button class="modal-cancel" onclick="removeFromCart('${d.deposit_id}')">移出購物車</button>`
+        : `<button class="modal-cancel" onclick="closeOrderModal()">取消</button>`;
+      // ⭐ 每次都重 build form
       document.getElementById('orderModalBody').innerHTML = `
-        <h3>// 叫貨</h3>
+        <h3>${title}</h3>
         <div class="deposit-info" id="orderDepositInfo">${d.deposit_id} ${beanLabel}</div>
         <div class="balance-info" id="orderBalanceInfo">Available: ${balance} LB</div>
         <label>叫貨磅數 (LB)</label>
-        <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" max="${balance}" placeholder="0">
+        <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" max="${balance}" value="${currentQty}" placeholder="0">
         <div class="modal-error" id="orderError"></div>
         <div class="modal-actions">
-          <button class="modal-cancel" onclick="closeOrderModal()">取消</button>
-          <button class="modal-submit" id="orderSubmitBtn" onclick="submitOrder()">送出訂單</button>
+          ${removeBtn}
+          <button class="modal-submit" id="orderSubmitBtn" onclick="confirmAddToCart()">${submitLabel}</button>
         </div>
       `;
       document.getElementById('orderModal').classList.add('active');
@@ -798,16 +1168,16 @@
       currentOrderDeposit = null;
     }
 
-    async function submitOrder() {
+    // 純前端：加入購物車 / 更新數量（不打 API）
+    function confirmAddToCart() {
       const qtyEl = document.getElementById('orderQty');
       const errEl = document.getElementById('orderError');
-      const btnEl = document.getElementById('orderSubmitBtn');
       const qty = parseFloat(qtyEl.value);
-      const balance = parseFloat(currentOrderDeposit.qty_balance_lb || 0);
+      const d = currentOrderDeposit;
+      const balance = parseFloat(d.qty_balance_lb || 0);
 
       errEl.textContent = '';
 
-      // 驗證
       if (!qty || qty <= 0) {
         errEl.textContent = '⚠️ 請輸入有效磅數';
         return;
@@ -821,61 +1191,183 @@
         return;
       }
 
-      // Mock mode: 假裝成功
+      cart.set(d.deposit_id, {
+        deposit_id: d.deposit_id,
+        qty_lb: qty,
+        bean_id: d.bean_id,
+        bean_name: d.bean_name || '',
+        balance: balance
+      });
+
+      closeOrderModal();
+      renderDeposits();
+      renderCartBar();
+    }
+
+    function removeFromCart(depositId) {
+      cart.delete(depositId);
+      closeOrderModal();
+      renderDeposits();
+      renderCartBar();
+      if (cart.size > 0 && document.getElementById('cartPage').classList.contains('active')) {
+        renderCartItems();
+      } else if (cart.size === 0) {
+        closeCartPage();
+      }
+    }
+
+    // ==================== CART BAR / PAGE (P2.5) ====================
+    function renderCartBar() {
+      const bar = document.getElementById('cartBar');
+      if (cart.size === 0) {
+        bar.classList.remove('active');
+        return;
+      }
+      let totalLb = 0;
+      for (const v of cart.values()) totalLb += v.qty_lb;
+      document.getElementById('cartCount').textContent = cart.size;
+      document.getElementById('cartTotal').textContent = totalLb % 1 === 0 ? totalLb : totalLb.toFixed(1);
+      bar.classList.add('active');
+    }
+
+    function openCartPage() {
+      if (cart.size === 0) return;
+      renderCartItems();
+      document.getElementById('cartPage').classList.add('active');
+    }
+
+    function closeCartPage() {
+      document.getElementById('cartPage').classList.remove('active');
+    }
+
+    function renderCartItems() {
+      const wrap = document.getElementById('cartItems');
+      if (cart.size === 0) {
+        wrap.innerHTML = `<div class="cart-empty">// 購物車是空的</div>`;
+        document.getElementById('cartSubmitBtn').disabled = true;
+        document.getElementById('cartFooterCount').textContent = '0';
+        document.getElementById('cartFooterTotal').textContent = '0';
+        return;
+      }
+      const items = [...cart.values()];
+      let totalLb = 0;
+      wrap.innerHTML = items.map(it => {
+        totalLb += it.qty_lb;
+        const beanLabel = it.bean_name
+          ? `<span class="bean-id-tag">${it.bean_id}</span> ${it.bean_name}`
+          : it.bean_id;
+        return `
+          <div class="cart-item" data-deposit-id="${it.deposit_id}">
+            <div class="item-deposit-id">${it.deposit_id}</div>
+            <div class="item-bean">${beanLabel}</div>
+            <div class="item-qty-row">
+              <div class="qty-controls">
+                <button class="qty-btn minus" onclick="adjustCartQty('${it.deposit_id}', -0.5)" aria-label="減少"></button>
+                <input class="qty-input" type="number" inputmode="decimal" step="0.5" min="0.5" max="${it.balance}" value="${it.qty_lb}" onchange="setCartQty('${it.deposit_id}', this.value)">
+                <button class="qty-btn plus" onclick="adjustCartQty('${it.deposit_id}', 0.5)" aria-label="增加"></button>
+                <span class="qty-unit">lb</span>
+              </div>
+              <button class="remove-btn" onclick="removeFromCart('${it.deposit_id}')">✕</button>
+            </div>
+            <div class="item-balance-hint">餘額 ${it.balance} lb</div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('cartFooterCount').textContent = cart.size;
+      document.getElementById('cartFooterTotal').textContent = totalLb % 1 === 0 ? totalLb : totalLb.toFixed(1);
+      document.getElementById('cartSubmitBtn').disabled = false;
+    }
+
+    function adjustCartQty(depositId, delta) {
+      const it = cart.get(depositId);
+      if (!it) return;
+      const newQty = Math.round((it.qty_lb + delta) * 2) / 2;  // 0.5 為單位
+      setCartQty(depositId, newQty);
+    }
+
+    function setCartQty(depositId, value) {
+      const it = cart.get(depositId);
+      if (!it) return;
+      let qty = parseFloat(value);
+      if (isNaN(qty) || qty < 0.5) qty = 0.5;
+      if (qty > it.balance) qty = it.balance;
+      qty = Math.round(qty * 2) / 2;
+      it.qty_lb = qty;
+      cart.set(depositId, it);
+      renderCartItems();
+      renderDeposits();
+      renderCartBar();
+    }
+
+    async function submitCart() {
+      if (cart.size === 0) return;
+      const items = [...cart.values()].map(it => ({
+        deposit_id: it.deposit_id,
+        qty_lb: it.qty_lb
+      }));
+      const btn = document.getElementById('cartSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'SENDING ...';
+
+      // Mock mode
       if (MOCK_MODE) {
-        btnEl.disabled = true;
-        btnEl.textContent = 'Sending...';
-        setTimeout(() => showOrderSuccess('ORDMOCK1234'), 500);
+        setTimeout(() => {
+          showCartSuccess('BATCHMOCK1234', items.length);
+        }, 600);
         return;
       }
 
-      // 真實送單
-      btnEl.disabled = true;
-      btnEl.textContent = 'Sending...';
+      // 向下相容：P2 後端 batch 還沒上線時，1 筆走舊格式，後端 work；N 筆要等 P2
+      const body = items.length === 1
+        ? { line_login_user_id: userId, deposit_id: items[0].deposit_id, qty_lb: items[0].qty_lb }
+        : { line_login_user_id: userId, items: items };
 
       try {
         const r = await fetch(`${API_BASE}/order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            line_login_user_id: userId,
-            deposit_id: currentOrderDeposit.deposit_id,
-            qty_lb: qty
-          })
+          body: JSON.stringify(body)
         });
         const data = await r.json();
         if (data.success) {
-          showOrderSuccess(data.order_id);
+          showCartSuccess(data.batch_id || data.order_id, items.length);
         } else {
-          errEl.textContent = data.error || '送單失敗，請稍後再試';
-          btnEl.disabled = false;
-          btnEl.textContent = '送出訂單';
+          btn.disabled = false;
+          btn.textContent = '送出叫貨';
+          alert(data.error || '送單失敗，請稍後再試');
         }
       } catch (e) {
-        errEl.textContent = 'NETWORK ERROR: ' + e.message;
-        btnEl.disabled = false;
-        btnEl.textContent = '送出訂單';
+        btn.disabled = false;
+        btn.textContent = '送出叫貨';
+        alert('NETWORK ERROR: ' + e.message);
       }
     }
 
-    function showOrderSuccess(orderId) {
-      const body = document.getElementById('orderModalBody');
-      body.innerHTML = `
+    function showCartSuccess(batchId, count) {
+      // 用 modal 顯示成功
+      document.getElementById('orderModalBody').innerHTML = `
         <div class="success-state">
           <div class="check">✓</div>
-          <div class="deposit-info">訂單已送出</div>
+          <div class="deposit-info">${count} 筆訂單已送出</div>
           <div class="balance-info">老闆收到通知後會處理</div>
-          <div class="order-id">${orderId || '-'}</div>
+          <div class="order-id">${batchId || '-'}</div>
         </div>
         <div class="modal-actions" style="margin-top: 20px;">
-          <button class="modal-submit" onclick="closeOrderModal()">繼續叫貨</button>
+          <button class="modal-submit" onclick="closeOrderModal()">完成</button>
         </div>
       `;
-      // 2 秒後自動關閉，但不 reload 餘額（餘額還沒扣，等老闆 /接受）
+      document.getElementById('orderModal').classList.add('active');
+      // 清空 cart + 關 cart 頁
+      cart.clear();
+      closeCartPage();
+      renderCartBar();
+      renderDeposits();
+      // 2 秒後自動關 modal 並 reload balance（讓客戶看到「老闆已通知」一下下）
       setTimeout(() => {
         if (document.getElementById('orderModal').classList.contains('active')) {
           closeOrderModal();
         }
+        if (!MOCK_MODE) loadBalance();
       }, 2000);
     }
 
