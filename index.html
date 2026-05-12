@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>FANCY 凡希｜訂豆專員</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,12 +20,16 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      touch-action: pan-y;  /* 禁止 pinch-zoom，只允許垂直捲動 */
+    }
     body {
       font-family: 'Noto Sans TC', -apple-system, system-ui, sans-serif;
       background: var(--white);
       color: var(--black);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;  /* 防止 iOS 橫轉直時字體自動放大 */
     }
 
     /* ==================== HERO ==================== */
@@ -489,9 +493,23 @@
       line-height: 0;
     }
     .cart-page .cart-header .cart-logo {
-      height: 34px;
+      height: 48px;
       width: auto;
       display: block;
+      /* 螢光綠 + glow（沿用 hero 配方）*/
+      filter:
+        brightness(0) saturate(100%)
+        invert(82%) sepia(82%)
+        saturate(2476%) hue-rotate(63deg)
+        brightness(115%) contrast(102%)
+        drop-shadow(0 0 10px rgba(57, 255, 20, 0.55))
+        drop-shadow(0 0 24px rgba(57, 255, 20, 0.25));
+      animation: cartLogoSpin 10s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes cartLogoSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
     .cart-page .cart-header .close-cart {
       background: var(--white);
