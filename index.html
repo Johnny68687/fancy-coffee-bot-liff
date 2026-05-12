@@ -485,11 +485,13 @@
       justify-content: space-between;
     }
     .cart-page .cart-header h2 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-weight: 700;
+      margin: 0;
+      line-height: 0;
+    }
+    .cart-page .cart-header .cart-logo {
+      height: 34px;
+      width: auto;
+      display: block;
     }
     .cart-page .cart-header .close-cart {
       background: var(--white);
@@ -955,7 +957,7 @@
   <!-- ==================== CART FULLSCREEN PAGE (P2.5) ==================== -->
   <div class="cart-page" id="cartPage">
     <div class="cart-header">
-      <h2>// 購物車</h2>
+      <h2><img src="logo2.png" alt="// 購物車" class="cart-logo"></h2>
       <button class="close-cart" onclick="closeCartPage()">繼續加豆</button>
     </div>
     <div class="cart-items" id="cartItems"></div>
