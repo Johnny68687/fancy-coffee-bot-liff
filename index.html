@@ -401,113 +401,6 @@
       box-shadow: none;
     }
 
-    /* ==================== DEPOSIT GROUP (Phase 2.6) ==================== */
-    .deposit-count-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--black);
-      color: var(--neon);
-      border: 1px solid var(--neon);
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 0 8px var(--neon-dim);
-      transition: all 0.15s;
-      margin-bottom: 6px;
-    }
-    .deposit-count-chip:active {
-      background: var(--neon);
-      color: var(--black);
-    }
-
-    /* Deposit detail modal — 列同支豆多筆 deposit */
-    .deposit-detail-list {
-      max-height: 60vh;
-      overflow-y: auto;
-      margin: 4px 0 16px;
-    }
-    .deposit-detail-item {
-      padding: 14px 0;
-      border-bottom: 1px solid var(--light-gray);
-    }
-    .deposit-detail-item:last-child {
-      border-bottom: none;
-    }
-    .deposit-detail-item .did {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gray);
-      margin-bottom: 4px;
-    }
-    .deposit-detail-item .qty-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .deposit-detail-item .qty-num {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--black);
-    }
-    .deposit-detail-item .qty-total {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: var(--gray);
-    }
-    .deposit-detail-item .qty-unit {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gray);
-      text-transform: uppercase;
-    }
-    .deposit-detail-item .opened {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      color: var(--gray);
-      text-transform: uppercase;
-    }
-
-    /* Order modal — deposit selector */
-    .modal .deposit-selector-wrap {
-      margin: -4px 0 12px;
-    }
-    .modal .deposit-selector-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gray);
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 6px;
-    }
-    .modal .deposit-selector {
-      width: 100%;
-      padding: 10px 12px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      border: 2px solid var(--black);
-      border-radius: 10px;
-      background: var(--white);
-      color: var(--black);
-      outline: none;
-      cursor: pointer;
-    }
-    .modal .deposit-selector:focus {
-      border-color: var(--neon);
-      box-shadow: 0 0 12px var(--neon-dim);
-    }
-
     /* ==================== CART BADGE (P2.5) ==================== */
     .cart-badge {
       position: absolute;
@@ -1182,17 +1075,6 @@
     </div>
   </div>
 
-  <!-- ==================== DEPOSIT DETAIL MODAL (P2.6) ==================== -->
-  <div class="modal-backdrop" id="depositDetailModal">
-    <div class="modal">
-      <h3 id="depositDetailTitle">// 儲值明細</h3>
-      <div class="deposit-detail-list" id="depositDetailList"></div>
-      <div class="modal-actions">
-        <button class="modal-submit" onclick="closeDepositDetail()">關閉</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ==================== CART FLOATING BAR (P2.5) ==================== -->
   <div class="cart-bar" id="cartBar" onclick="openCartPage()">
     <div class="cart-summary">
@@ -1285,129 +1167,48 @@
       renderDeposits();
     }
 
-    // Group deposits by bean_id
-    function groupDepositsByBean(deposits) {
-      const map = {};
-      for (const d of deposits) {
-        const key = d.bean_id || '_unknown';
-        if (!map[key]) {
-          map[key] = {
-            bean_id: d.bean_id,
-            bean_name: d.bean_name || '',
-            deposits: [],
-            total_balance: 0,
-            total_initial: 0,
-            earliest_opened: null
-          };
-        }
-        map[key].deposits.push(d);
-        map[key].total_balance += parseFloat(d.qty_balance_lb || 0);
-        map[key].total_initial += parseFloat(d.qty_initial_lb || 0);
-        const openedAt = d.opened_at || '';
-        if (!map[key].earliest_opened || (openedAt && openedAt < map[key].earliest_opened)) {
-          map[key].earliest_opened = openedAt;
-        }
-      }
-      return map;
-    }
-
     function renderDeposits() {
       const list = document.getElementById('depositsList');
       const deposits = window.__deposits || [];
-      const groupsMap = groupDepositsByBean(deposits);
-      const groups = Object.values(groupsMap);
-
-      if (groups.length === 0) {
-        list.innerHTML = `<div class="empty-state">目前沒有 active 儲值帳戶<br>請聯繫老闆開戶</div>`;
-        return;
-      }
-
-      list.innerHTML = groups.map(g => {
-        const totalBalance = g.total_balance;
-        const totalInitial = g.total_initial;
-        const beanLabel = g.bean_name
-          ? `<span class="bean-id-tag">${g.bean_id}</span> ${g.bean_name}`
-          : (g.bean_id || '(未知)');
-        const canOrder = totalBalance >= 0.5;
-        const depositCount = g.deposits.length;
-        const isMulti = depositCount > 1;
-
-        // cart 內該 bean 的 qty 總和（同 bean cart 限 1 筆，所以實際就是該 1 筆 qty）
-        let cartTotal = 0;
-        for (const item of cart.values()) {
-          if (item.bean_id === g.bean_id) cartTotal += item.qty_lb;
-        }
-
-        // G: 進度條雙層 — 綠（扣完後剩）+ 螢光綠斜紋（即將被扣）
-        const balanceAfter = Math.max(0, totalBalance - cartTotal);
-        const fillPct = totalInitial > 0 ? (balanceAfter / totalInitial) * 100 : 0;
-        const deductPct = totalInitial > 0 ? (Math.min(cartTotal, totalBalance) / totalInitial) * 100 : 0;
-
-        const headerLine = isMulti
-          ? `<div class="deposit-id"><span class="deposit-count-chip" onclick="openDepositDetail('${g.bean_id}')">${depositCount} 筆儲值 ›</span></div>`
-          : `<div class="deposit-id">${g.deposits[0].deposit_id || ''}</div>`;
-
+      list.innerHTML = deposits.map((d, i) => {
+        const balance = parseFloat(d.qty_balance_lb || 0);
+        const initial = parseFloat(d.qty_initial_lb || 0);
+        // 優先顯示 bean_name，沒有就 fallback 到 bean_id
+        const beanLabel = d.bean_name
+          ? `<span class="bean-id-tag">${d.bean_id}</span> ${d.bean_name}`
+          : d.bean_id;
+        // 餘額不夠 0.5 磅就不顯示叫貨按鈕
+        const canOrder = balance >= 0.5;
+        // 是否已在購物車
+        const inCart = cart.get(d.deposit_id);
+        const cartQty = inCart ? inCart.qty_lb : 0;
+        // G: 進度條雙層 — 綠（扣完後剩）+ 橘（即將被扣）
+        const balanceAfter = Math.max(0, balance - cartQty);
+        const fillPct = initial > 0 ? (balanceAfter / initial) * 100 : 0;
+        const deductPct = initial > 0 ? (Math.min(cartQty, balance) / initial) * 100 : 0;
         return `
-          <div class="deposit-card" data-bean-id="${g.bean_id}">
-            ${cartTotal > 0 ? `<div class="cart-badge">✓ 已加 ${cartTotal} lb</div>` : ''}
-            ${headerLine}
+          <div class="deposit-card" data-deposit-id="${d.deposit_id}">
+            ${inCart ? `<div class="cart-badge">✓ 已加 ${cartQty} lb</div>` : ''}
+            <div class="deposit-id">${d.deposit_id}</div>
             <div class="deposit-bean">${beanLabel}</div>
             <div class="balance-row">
-              <span class="balance-num">${totalBalance}</span>
-              <span class="balance-total">/ ${totalInitial}</span>
+              <span class="balance-num">${balance}</span>
+              <span class="balance-total">/ ${initial}</span>
               <span class="balance-unit">lb</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill" style="width:${fillPct}%"></div>
-              ${cartTotal > 0 ? `<div class="progress-fill-deducted" style="width:${deductPct}%; left:${fillPct}%"></div>` : ''}
+              ${cartQty > 0 ? `<div class="progress-fill-deducted" style="width:${deductPct}%; left:${fillPct}%"></div>` : ''}
             </div>
-            <div class="deposit-meta">opened · ${g.earliest_opened || '-'}${isMulti ? ' (最早)' : ''}</div>
+            <div class="deposit-meta">opened · ${d.opened_at || '-'}</div>
             ${canOrder ? (
-              cartTotal > 0
-                ? `<button class="order-btn edit-cart" onclick="openOrderModal('${g.bean_id}')">修改</button>`
-                : `<button class="order-btn add-to-cart" onclick="openOrderModal('${g.bean_id}')">加入購物車</button>`
+              inCart
+                ? `<button class="order-btn edit-cart" onclick="openOrderModal(${i})">修改</button>`
+                : `<button class="order-btn add-to-cart" onclick="openOrderModal(${i})">加入購物車</button>`
             ) : ''}
           </div>
         `;
       }).join('');
-    }
-
-    // 開啟 deposit 明細 modal（同 bean 多筆 deposit 展開看每筆細節）
-    function openDepositDetail(beanId) {
-      const deposits = window.__deposits || [];
-      const groupsMap = groupDepositsByBean(deposits);
-      const group = groupsMap[beanId];
-      if (!group) return;
-
-      const beanLabel = group.bean_name
-        ? `<span class="bean-id-tag">${group.bean_id}</span> ${group.bean_name}`
-        : group.bean_id;
-
-      document.getElementById('depositDetailTitle').innerHTML = `// 儲值明細 — ${beanLabel}`;
-
-      // 依 opened_at 排序（早→晚）
-      const sorted = [...group.deposits].sort((a, b) =>
-        (a.opened_at || '').localeCompare(b.opened_at || '')
-      );
-
-      const list = document.getElementById('depositDetailList');
-      list.innerHTML = sorted.map(d => `
-        <div class="deposit-detail-item">
-          <div class="did">${d.deposit_id}</div>
-          <div class="qty-row">
-            <span class="qty-num">${d.qty_balance_lb}</span>
-            <span class="qty-total">/ ${d.qty_initial_lb}</span>
-            <span class="qty-unit">lb</span>
-          </div>
-          <div class="opened">opened · ${d.opened_at || '-'}</div>
-        </div>
-      `).join('');
-
-      document.getElementById('depositDetailModal').classList.add('active');
-    }
-
-    function closeDepositDetail() {
-      document.getElementById('depositDetailModal').classList.remove('active');
     }
 
     async function handleBind() {
@@ -1467,68 +1268,29 @@
       if (e.key === 'Enter') handleBind();
     });
 
-    // ==================== CART STATE (P2.5 + P2.6) ====================
-    // key: deposit_id, value: { deposit_id, qty_lb, bean_id, bean_name, balance }
-    // 同 bean 限 1 筆 cart entry（confirmAddToCart 內保證）
+    // ==================== CART STATE (P2.5) ====================
+    // key: deposit_id, value: { deposit_id, qty_lb, bean_label, balance, bean_id, bean_name }
     const cart = new Map();
-    let currentOrderBeanId = null;
-    let currentOrderDepositId = null;
+    let currentOrderDeposit = null;
 
-    function openOrderModal(beanId) {
-      const deposits = window.__deposits || [];
-      const groupsMap = groupDepositsByBean(deposits);
-      const group = groupsMap[beanId];
-      if (!group) return;
-
-      currentOrderBeanId = beanId;
-      const beanLabel = group.bean_name
-        ? `<span class="bean-id-tag">${group.bean_id}</span> ${group.bean_name}`
-        : group.bean_id;
-
-      // cart 內該 bean 的 entry（同 bean 限 1 筆，find 第一個）
-      const existingCartEntry = [...cart.values()].find(c => c.bean_id === beanId);
-      const isEditing = !!existingCartEntry;
-
-      // 依 opened_at 排序（早→晚），FIFO 預設選最早
-      const sortedDeposits = [...group.deposits].sort((a, b) =>
-        (a.opened_at || '').localeCompare(b.opened_at || '')
-      );
-
-      // 預選 deposit：editing → 用 cart 內已記的；新增 → FIFO（最早）
-      const selectedDepositId = isEditing
-        ? existingCartEntry.deposit_id
-        : sortedDeposits[0].deposit_id;
-      currentOrderDepositId = selectedDepositId;
-
-      const currentQty = isEditing ? existingCartEntry.qty_lb : '';
-      const title = isEditing ? '// 修改數量' : '// 加入購物車';
-      const submitLabel = isEditing ? '更新' : '加入購物車';
-      const cancelBtn = isEditing
-        ? `<button class="modal-cancel" onclick="removeFromCart('${selectedDepositId}')">移出購物車</button>`
+    function openOrderModal(depositIndex) {
+      const d = window.__deposits[depositIndex];
+      if (!d) return;
+      currentOrderDeposit = d;
+      const balance = parseFloat(d.qty_balance_lb || 0);
+      const beanLabel = d.bean_name ? `${d.bean_id} · ${d.bean_name}` : d.bean_id;
+      const inCart = cart.get(d.deposit_id);
+      const currentQty = inCart ? inCart.qty_lb : '';
+      const title = inCart ? '// 修改數量' : '// 加入購物車';
+      const submitLabel = inCart ? '更新' : '加入購物車';
+      const removeBtn = inCart
+        ? `<button class="modal-cancel" onclick="removeFromCart('${d.deposit_id}')">移出購物車</button>`
         : `<button class="modal-cancel" onclick="closeOrderModal()">取消</button>`;
-
-      // 多筆 deposit 才顯示 selector
-      const isMulti = group.deposits.length > 1;
-      const selectorHtml = isMulti ? `
-        <div class="deposit-selector-wrap">
-          <label class="deposit-selector-label">從哪筆扣？</label>
-          <select class="deposit-selector" id="depositSelector" onchange="onDepositSelectorChange()">
-            ${sortedDeposits.map((d, idx) => {
-              const fifoTag = (idx === 0 && !isEditing) ? 'FIFO · ' : '';
-              return `<option value="${d.deposit_id}" ${d.deposit_id === selectedDepositId ? 'selected' : ''}>${fifoTag}${d.deposit_id} · ${d.opened_at || ''} · 餘 ${d.qty_balance_lb} lb</option>`;
-            }).join('')}
-          </select>
-        </div>
-      ` : '';
-
-      const selectedDeposit = sortedDeposits.find(d => d.deposit_id === selectedDepositId);
-      const balance = parseFloat(selectedDeposit.qty_balance_lb || 0);
-
+      // ⭐ 每次都重 build form
       document.getElementById('orderModalBody').innerHTML = `
         <h3>${title}</h3>
-        <div class="deposit-info">${beanLabel}</div>
+        <div class="deposit-info" id="orderDepositInfo">${d.deposit_id} ${beanLabel}</div>
         <div class="balance-info" id="orderBalanceInfo">Available: ${balance} LB</div>
-        ${selectorHtml}
         <label>叫貨磅數 (LB)</label>
         <input type="number" id="orderQty" inputmode="decimal" step="0.5" min="0.5" max="${balance}" value="${currentQty}" placeholder="0" oninput="updateBalancePreview()">
         <div class="quick-chips">
@@ -1538,45 +1300,21 @@
         </div>
         <div class="modal-error" id="orderError"></div>
         <div class="modal-actions">
-          ${cancelBtn}
+          ${removeBtn}
           <button class="modal-submit" id="orderSubmitBtn" onclick="confirmAddToCart()">${submitLabel}</button>
         </div>
       `;
       document.getElementById('orderModal').classList.add('active');
-      updateBalancePreview();
-    }
-
-    // dropdown 切換 → 更新 currentOrderDepositId + max qty + balance preview
-    function onDepositSelectorChange() {
-      const selector = document.getElementById('depositSelector');
-      if (!selector) return;
-      currentOrderDepositId = selector.value;
-
-      const deposits = window.__deposits || [];
-      const selectedDeposit = deposits.find(d => d.deposit_id === currentOrderDepositId);
-      if (!selectedDeposit) return;
-
-      const balance = parseFloat(selectedDeposit.qty_balance_lb || 0);
-      const input = document.getElementById('orderQty');
-      if (input) {
-        input.max = balance;
-        // 若已填值超過新 max，截到 max
-        const cur = parseFloat(input.value) || 0;
-        if (cur > balance) input.value = balance;
-      }
-      document.getElementById('orderBalanceInfo').textContent = `Available: ${balance} LB`;
-      updateBalancePreview();
+      updateBalancePreview();  // modal 開啟時跑一次（處理「修改」預填值的預扣顯示）
+      // 不 auto-focus input，避免鍵盤跳出干擾 chip 操作。客戶要打字自己點 input
     }
 
     // X: input 變化時即時更新 modal 預扣顯示「579 → 449 LB」
     function updateBalancePreview() {
       const input = document.getElementById('orderQty');
       const info = document.getElementById('orderBalanceInfo');
-      if (!input || !info || !currentOrderDepositId) return;
-      const deposits = window.__deposits || [];
-      const d = deposits.find(item => item.deposit_id === currentOrderDepositId);
-      if (!d) return;
-      const balance = parseFloat(d.qty_balance_lb || 0);
+      if (!input || !info || !currentOrderDeposit) return;
+      const balance = parseFloat(currentOrderDeposit.qty_balance_lb || 0);
       const qty = parseFloat(input.value) || 0;
       if (qty > 0 && qty <= balance) {
         const after = balance - qty;
@@ -1589,8 +1327,7 @@
 
     function closeOrderModal() {
       document.getElementById('orderModal').classList.remove('active');
-      currentOrderBeanId = null;
-      currentOrderDepositId = null;
+      currentOrderDeposit = null;
     }
 
     // A: chip 點擊累加（不 focus input，避免鍵盤跳出）
@@ -1609,17 +1346,7 @@
       const errEl = document.getElementById('orderError');
       const btn = document.getElementById('orderSubmitBtn');
       const qty = parseFloat(qtyEl.value);
-
-      if (!currentOrderDepositId) {
-        errEl.textContent = '⚠️ 缺少 deposit 選擇';
-        return;
-      }
-      const deposits = window.__deposits || [];
-      const d = deposits.find(item => item.deposit_id === currentOrderDepositId);
-      if (!d) {
-        errEl.textContent = '⚠️ 找不到對應儲值';
-        return;
-      }
+      const d = currentOrderDeposit;
       const balance = parseFloat(d.qty_balance_lb || 0);
 
       errEl.textContent = '';
@@ -1633,7 +1360,7 @@
         return;
       }
       if (qty > balance) {
-        errEl.textContent = `⚠️ 該筆餘額只有 ${balance} 磅`;
+        errEl.textContent = `⚠️ 您的餘額只有 ${balance} 磅`;
         return;
       }
 
@@ -1643,11 +1370,7 @@
       btn.innerHTML = `<svg class="check-svg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>已加入`;
 
       setTimeout(() => {
-        // 同 bean 限 1 筆：先刪 cart 內所有同 bean_id 的 entry（避免客戶換 deposit 後留兩筆）
-        for (const [key, item] of [...cart.entries()]) {
-          if (item.bean_id === d.bean_id) cart.delete(key);
-        }
-        // 加新 entry
+        // 更新 cart 狀態
         cart.set(d.deposit_id, {
           deposit_id: d.deposit_id,
           qty_lb: qty,
@@ -1656,7 +1379,7 @@
           balance: balance
         });
         closeOrderModal();
-        renderDeposits();
+        renderDeposits();  // 顯示徽章 + 橘色 deducted 進度
         // B: 飛入動畫（cart bar 數字更新延後到飛入結束）
         flyToCart(d.deposit_id, qty);
       }, 200);
@@ -1664,13 +1387,7 @@
 
     // B: 從 deposit card 飛 pill 到 cart bar
     function flyToCart(depositId, qty) {
-      // 合併卡是按 bean_id 顯示，找對應的 deposit 拿 bean_id 再找 card
-      const deposits = window.__deposits || [];
-      const d = deposits.find(item => item.deposit_id === depositId);
-      const beanId = d ? d.bean_id : null;
-      const card = beanId
-        ? document.querySelector(`.deposit-card[data-bean-id="${beanId}"]`)
-        : null;
+      const card = document.querySelector(`.deposit-card[data-deposit-id="${depositId}"]`);
       const bar = document.getElementById('cartBar');
       const wasActive = bar.classList.contains('active');
 
